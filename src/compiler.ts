@@ -14,6 +14,7 @@ export const DAMAGE_TYPES = [
   'radiant',
   'slashing',
   'thunder',
+  'healing'
 ];
 
 function getEditDistance(a: string, b: string): number {
@@ -66,7 +67,7 @@ export function fuzzyMatchDamageType(input: string): string {
     return closestType;
   }
   
-  return normalized;
+  return `INVALID:${normalized}`;
 }
 
 /**
@@ -92,6 +93,11 @@ export function compileShorthand(input: string): string {
     }
     
     const cleanType = fuzzyMatchDamageType(type);
+    
+    if (cleanType.startsWith('INVALID:')) {
+      const badType = cleanType.split(':')[1];
+      return `⚠️ ERROR: "${badType}" is not a valid damage type.`;
+    }
     
     // Add spaces around + or - for the display text if not already present, as D&D Beyond can be picky
     let spacedDisplay = displayDice;
