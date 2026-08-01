@@ -108,6 +108,17 @@ function App() {
               <span className="text-xs px-2 py-1 bg-solar-base2 text-solar-base00 rounded font-medium border border-solar-base1/30">
                 v1.0
               </span>
+              <span className="text-sm text-solar-base01 ml-4 border-l border-solar-base1/30 pl-4">
+                by Ray Salemi
+              </span>
+              <a 
+                href="https://buymeacoffee.com/raysalemi" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="ml-3 flex items-center gap-1.5 text-xs bg-[#FFDD00] text-black/80 px-2.5 py-1 rounded font-bold hover:bg-[#FFDD00]/90 hover:text-black transition-colors"
+              >
+                <span>☕</span> Buy me a coffee
+              </a>
             </div>
           </div>
           <div className="flex items-center space-x-4">
