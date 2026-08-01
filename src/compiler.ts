@@ -16,6 +16,25 @@ export const DAMAGE_TYPES = [
   'thunder',
 ];
 
+function getEditDistance(a: string, b: string): number {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+  for (let j = 1; j <= b.length; j++) {
+    for (let i = 1; i <= a.length; i++) {
+      const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i - 1] + 1,
+        matrix[j - 1][i] + 1,
+        matrix[j - 1][i - 1] + indicator
+      );
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
 /**
  * Fuzzy matches a string to the closest damage type.
  * Returns the exact damage type if found, or the original string if no good match.
@@ -26,17 +45,25 @@ export function fuzzyMatchDamageType(input: string): string {
   // Exact match
   if (DAMAGE_TYPES.includes(normalized)) return normalized;
   
-  // Very basic fuzzy logic for typos (e.g. "blugeoning" -> "bludgeoning")
-  // Levenshtein or simple includes could go here. 
-  // For v1, we check if one is a substring of the other or has a high character overlap.
+  // Find the closest match using Levenshtein distance
+  let closestType = normalized;
+  let minDistance = Infinity;
+
   for (const type of DAMAGE_TYPES) {
     if (type.includes(normalized) || normalized.includes(type)) {
-      return type;
+      return type; // High substring overlap takes precedence
     }
-    
-    // Levenshtein distance 1 or 2 heuristic could be added. 
-    // Here we'll do a simple check for 'blugeoning' explicitly as requested.
-    if (normalized === 'blugeoning' && type === 'bludgeoning') return type;
+
+    const dist = getEditDistance(normalized, type);
+    if (dist < minDistance) {
+      minDistance = dist;
+      closestType = type;
+    }
+  }
+  
+  // If it's a minor typo (distance 1 or 2), auto-correct it
+  if (minDistance <= 2) {
+    return closestType;
   }
   
   return normalized;
