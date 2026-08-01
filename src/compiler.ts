@@ -55,18 +55,45 @@ export function compileShorthand(input: string): string {
 
   // 2. [[dmg: XdY+Z, type]] -> [rollable](XdY+Z);{"diceNotation":"XdY+Z", "rollType":"damage", "rollDamageType":"type"}[/rollable]
   output = output.replace(/\[\[dmg:\s*([^,]+),\s*([^\]]+)\]\]/gi, (_match, dice, type) => {
-    const cleanDice = dice.trim().replace(/\s+/g, '');
-    const cleanType = fuzzyMatchDamageType(type);
-    // Determine display string, usually we want to preserve spacing like (1d10 + 4) but clean string is safer
+    let cleanDice = dice.trim().replace(/\s+/g, '');
     const displayDice = dice.trim();
-    return `[rollable](${displayDice});{"diceNotation":"${cleanDice}", "rollType":"damage", "rollDamageType":"${cleanType}"}[/rollable]`;
+    
+    // If the user typed "13 (2d8 + 4)", extract just the "2d8+4" for the JSON logic
+    const parenMatch = displayDice.match(/\(([^)]+)\)/);
+    if (parenMatch) {
+      cleanDice = parenMatch[1].replace(/\s+/g, '');
+    }
+    
+    const cleanType = fuzzyMatchDamageType(type);
+    
+    // Add spaces around + or - for the display text if not already present, as D&D Beyond can be picky
+    let spacedDisplay = displayDice;
+    if (!spacedDisplay.includes(' + ') && !spacedDisplay.includes(' - ')) {
+      spacedDisplay = spacedDisplay.replace(/\+/g, ' + ').replace(/-/g, ' - ');
+    }
+    
+    const finalDisplay = displayDice.includes('(') ? displayDice : `(${spacedDisplay})`;
+    return `[rollable]${finalDisplay};{"diceNotation":"${cleanDice}", "rollType":"damage", "rollDamageType":"${cleanType}"}[/rollable]`;
   });
 
   // 3. [[roll: XdY+Z]] -> [rollable](XdY+Z);{"diceNotation":"XdY+Z", "rollType":"roll"}[/rollable]
   output = output.replace(/\[\[roll:\s*([^\]]+)\]\]/gi, (_match, dice) => {
-    const cleanDice = dice.trim().replace(/\s+/g, '');
+    let cleanDice = dice.trim().replace(/\s+/g, '');
     const displayDice = dice.trim();
-    return `[rollable](${displayDice});{"diceNotation":"${cleanDice}", "rollType":"roll"}[/rollable]`;
+    
+    const parenMatch = displayDice.match(/\(([^)]+)\)/);
+    if (parenMatch) {
+      cleanDice = parenMatch[1].replace(/\s+/g, '');
+    }
+    
+    // Add spaces around + or - for the display text
+    let spacedDisplay = displayDice;
+    if (!spacedDisplay.includes(' + ') && !spacedDisplay.includes(' - ')) {
+      spacedDisplay = spacedDisplay.replace(/\+/g, ' + ').replace(/-/g, ' - ');
+    }
+    
+    const finalDisplay = displayDice.includes('(') ? displayDice : `(${spacedDisplay})`;
+    return `[rollable]${finalDisplay};{"diceNotation":"${cleanDice}", "rollType":"roll"}[/rollable]`;
   });
 
   // 4. [[spell: name]] -> [spell]name[/spell]
@@ -84,7 +111,7 @@ export function decompileToShorthand(input: string): string {
   let output = input;
 
   // Pattern: [rollable]Display;JSON[/rollable]
-  const rollableRegex = /\[rollable\](.*?);(.*?)\[\/rollable\]/gi;
+  const rollableRegex = /\[rollable\](.*?);(.*?)\[\/rollable\]/gis;
   
   output = output.replace(rollableRegex, (match, display, jsonString) => {
     try {
@@ -113,7 +140,7 @@ export function decompileToShorthand(input: string): string {
   });
 
   // Pattern: [spell]name[/spell]
-  const spellRegex = /\[spell\](.*?)\[\/spell\]/gi;
+  const spellRegex = /\[spell\](.*?)\[\/spell\]/gis;
   output = output.replace(spellRegex, (_match, spellName) => {
     return `[[spell: ${spellName}]]`;
   });

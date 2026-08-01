@@ -1,16 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00E5FF;
-  --color-success: #2ecc71;
-  --color-accent: #9b59b6;
-  --color-bg-base: #121212;
-  --color-bg-surface: #1E1E1E;
-  --color-bg-surface-elevated: #333333;
+  /* Solarized Palette */
+  --color-solar-base03: #002b36;
+  --color-solar-base02: #073642;
+  --color-solar-base01: #586e75;
+  --color-solar-base00: #657b83;
+  --color-solar-base0: #839496;
+  --color-solar-base1: #93a1a1;
+  --color-solar-base2: #eee8d5;
+  --color-solar-base3: #fdf6e3;
+  
+  --color-solar-yellow: #b58900;
+  --color-solar-orange: #cb4b16;
+  --color-solar-red: #dc322f;
+  --color-solar-magenta: #d33682;
+  --color-solar-violet: #6c71c4;
+  --color-solar-blue: #268bd2;
+  --color-solar-cyan: #2aa198;
+  --color-solar-green: #859900;
 }
 
 @layer base {
   body {
-    @apply bg-bg-base text-gray-200 antialiased h-screen overflow-hidden font-sans;
+    @apply bg-solar-base3 text-solar-base02 antialiased h-screen overflow-hidden font-sans;
   }
 }
