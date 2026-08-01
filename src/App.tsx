@@ -101,7 +101,14 @@ function App() {
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
-            <h1 className="text-xl font-bold text-solar-base03 tracking-wide">D&D Beyond Compiler</h1>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-xl font-bold text-solar-base02 tracking-tight">
+                md2rollable
+              </h1>
+              <span className="text-xs px-2 py-1 bg-solar-base2 text-solar-base00 rounded font-medium border border-solar-base1/30">
+                v1.0
+              </span>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <input 
@@ -119,6 +126,35 @@ function App() {
             </button>
           </div>
         </header>
+
+        {/* Quick Reference Banner */}
+        <div className="bg-solar-base2/50 border-b border-solar-base1/30 px-6 py-4 flex flex-col gap-4 shrink-0">
+          <div className="flex gap-6">
+            <div className="flex-1">
+              <h3 className="text-[11px] font-bold text-solar-base01 uppercase tracking-wider mb-2">Example Input</h3>
+              <div className="flex flex-col gap-1.5 font-mono text-[13px] text-solar-base02">
+                <div><span className="font-bold text-solar-blue">[[hit:</span> +6<span className="font-bold text-solar-blue">]]</span></div>
+                <div><span className="font-bold text-solar-blue">[[dmg:</span> 2d6+3, force<span className="font-bold text-solar-blue">]]</span></div>
+                <div><span className="font-bold text-solar-blue">[[spell:</span> fireball<span className="font-bold text-solar-blue">]]</span></div>
+              </div>
+            </div>
+            
+            <div className="flex-1 pl-6 border-l border-solar-base1/20">
+              <h3 className="text-[11px] font-bold text-solar-base01 uppercase tracking-wider mb-2">Example Output</h3>
+              <div className="flex flex-col gap-1.5 font-mono text-[13px] text-solar-base01">
+                <div>[rollable]+6;&#123;"diceNotation":"1d20+6","rollType":"to hit"&#125;[/rollable]</div>
+                <div className="truncate" title='[rollable](2d6 + 3);{"diceNotation":"2d6+3","rollType":"damage","rollDamageType":"force"}[/rollable]'>[rollable](2d6 + 3);&#123;"diceNotation":"2d6+3","rollType":"damage"...&#125;[/rollable]</div>
+                <div>[spell]fireball[/spell]</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Magic Paste Tip */}
+          <div className="text-[12px] text-solar-base01 flex items-center gap-2 bg-solar-base2 px-3 py-1.5 rounded w-fit border border-solar-base1/20">
+            <span className="text-solar-yellow text-base">✨</span>
+            <span><strong>Magic Paste:</strong> You can paste raw D&D Beyond <code className="bg-solar-base3 px-1 rounded text-[11px]">[rollable]</code> code directly into the editor to instantly convert it back to shorthand!</span>
+          </div>
+        </div>
 
         {/* Editor Split Pane */}
         <div className="flex-1 flex overflow-hidden">
